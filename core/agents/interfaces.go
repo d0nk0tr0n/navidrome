@@ -33,15 +33,17 @@ type ExternalImage struct {
 }
 
 type Song struct {
-	ID         string
-	Name       string
-	MBID       string
-	ISRC       string
-	Artist     string
-	ArtistMBID string
-	Album      string
-	AlbumMBID  string
-	Duration   uint32 // Duration in milliseconds, 0 means unknown
+    ID         string
+    Name       string
+    MBID       string
+    ISRC       string
+    Artist     string
+    ArtistMBID string
+    Album      string
+    AlbumMBID  string
+    Duration   uint32  // Duration in milliseconds, 0 means unknown
+    Scrobbles  int     // Global scrobble count from external source (e.g. Last.fm)
+    Match      float64 // Similarity score from external source (0-1)
 }
 
 var (

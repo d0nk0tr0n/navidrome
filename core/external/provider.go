@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"net/url"
 	"sort"
 	"strings"
@@ -301,9 +302,13 @@ func (e *provider) SimilarSongs(ctx context.Context, id string, count int) (mode
 		return nil, model.ErrNotFound
 	}
 
-	if err == nil && len(songs) > 0 {
-		return e.matcher.MatchSongsToLibrary(ctx, songs, count)
-	}
+if err == nil && len(songs) > 0 {
+        matched, err := e.matcher.MatchSongsToLibrary(ctx, songs, count)
+        if err != nil || len(matched) == 0 {
+                return matched, err
+        }
+        return reRankByPopularity(songs, matched, conf.Server.SimilarSongsPopularityWeight), nil
+}
 
 	// Fallback to existing similar artists + top songs algorithm
 	return e.similarSongsFallback(ctx, id, count)
@@ -761,6 +766,58 @@ func (e *provider) loadSimilar(ctx context.Context, artist *auxArtist, count int
 	}
 	artist.SimilarArtists = loaded
 	return nil
+}
+
+// reRankByPopularity re-ranks matched songs using a weighted combination of
+// Last.fm similarity score and global listener count.
+// weight=0.0 means pure similarity order, weight=1.0 means pure popularity.
+func reRankByPopularity(songs []agents.Song, matched model.MediaFiles, weight float64) model.MediaFiles {
+        if weight <= 0 {
+                return matched
+        }
+
+        // Build a lookup from track name+artist -> Song (for Match and Scrobbles)
+        type key struct{ name, artist string }
+        songMeta := make(map[key]agents.Song, len(songs))
+        var maxScrobbles int
+        for _, s := range songs {
+                songMeta[key{strings.ToLower(s.Name), strings.ToLower(s.Artist)}] = s
+                if s.Scrobbles > maxScrobbles {
+                        maxScrobbles = s.Scrobbles
+                }
+        }
+        if maxScrobbles == 0 {
+                return matched
+        }
+
+        type scored struct {
+                mf    model.MediaFile
+                score float64
+        }
+
+        results := make([]scored, 0, len(matched))
+        for i, mf := range matched {
+                k := key{strings.ToLower(mf.Title), strings.ToLower(mf.Artist)}
+                meta, ok := songMeta[k]
+                // Fallback: use position-based similarity if no metadata found
+                matchScore := meta.Match
+                if !ok || matchScore == 0 {
+                        matchScore = 1.0 - float64(i)/float64(len(matched))
+                }
+                normListeners := math.Log1p(float64(meta.Scrobbles)) / math.Log1p(float64(maxScrobbles))
+                score := (1-weight)*matchScore + weight*normListeners
+                results = append(results, scored{mf, score})
+        }
+
+        sort.Slice(results, func(i, j int) bool {
+                return results[i].score > results[j].score
+        })
+
+        out := make(model.MediaFiles, len(results))
+        for i, r := range results {
+                out[i] = r.mf
+        }
+        return out
 }
 
 type refreshQueue[T any] chan<- *T

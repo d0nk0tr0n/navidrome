@@ -62,6 +62,7 @@ type configOptions struct {
 	DefaultDownsamplingFormat       string
 	Search                          searchOptions `json:",omitzero"`
 	SimilarSongsMatchThreshold      int
+	SimilarSongsPopularityWeight    float64
 	RecentlyAddedByModTime          bool
 	PreferSortTags                  bool
 	IgnoredArticles                 string
@@ -717,6 +718,7 @@ func setViperDefaults() {
 	viper.SetDefault("search.fullstring", false)
 	viper.SetDefault("search.backend", "fts")
 	viper.SetDefault("similarsongsmatchthreshold", 85)
+	viper.SetDefault("similarsongspopularityweight", 0.3)
 	viper.SetDefault("recentlyaddedbymodtime", false)
 	viper.SetDefault("prefersorttags", false)
 	viper.SetDefault("ignoredarticles", "The El La Los Las Le Les Os As O A")

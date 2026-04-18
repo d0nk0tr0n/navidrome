@@ -230,12 +230,15 @@ func (l *lastfmAgent) GetSimilarSongsByTrack(ctx context.Context, id, name, arti
 	}
 	res := make([]agents.Song, 0, len(resp))
 	for _, t := range resp {
-		res = append(res, agents.Song{
-			Name:       t.Name,
-			MBID:       t.MBID,
-			Artist:     t.Artist.Name,
-			ArtistMBID: t.Artist.MBID,
-		})
+        	scrobbles, _ := strconv.Atoi(t.Scrobbles)
+                res = append(res, agents.Song{
+                        Name:       t.Name,
+                        MBID:       t.MBID,
+                        Artist:     t.Artist.Name,
+                        ArtistMBID: t.Artist.MBID,
+                        Scrobbles:  scrobbles,
+                        Match:      t.Match,
+                })
 	}
 	return res, nil
 }
