@@ -1,0 +1,19 @@
+FROM node:22-alpine AS ui-builder
+RUN apk add --no-cache bash
+WORKDIR /app/ui
+COPY ui/ .
+RUN chmod +x bin/*.sh
+RUN npm ci
+RUN npm run build
+
+FROM golang:1.26-alpine AS go-builder
+RUN apk add --no-cache gcc musl-dev sqlite-dev taglib-dev
+WORKDIR /app
+COPY . .
+COPY --from=ui-builder /app/ui/build ./ui/build
+RUN go build -tags "netgo sqlite_fts5" \
+  -ldflags "-X github.com/navidrome/navidrome/consts.gitTag=v0.61.2 -X github.com/navidrome/navidrome/consts.gitSha=aa84e645" \
+  -o navidrome .
+
+FROM deluan/navidrome:latest
+COPY --from=go-builder /app/navidrome /app/navidrome

@@ -69,7 +69,7 @@ type SimilarTrack struct {
     Name      string             `json:"name"`
     MBID      string             `json:"mbid"`
     Match     float64            `json:"match"`
-    Scrobbles string             `json:"playcount"`
+    Scrobbles int                `json:"playcount"`
     Artist    SimilarTrackArtist `json:"artist"`
 }
 

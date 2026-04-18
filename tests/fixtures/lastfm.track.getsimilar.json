@@ -11,7 +11,7 @@
                     "mbid": "8538e728-ca0b-4321-b7e5-cff6565dd4c0",
                     "url": "https://www.last.fm/music/Depeche+Mode"
                 },
-                "playcount": "1500000"
+                "playcount": 1500000
             },
             {
                 "name": "Everything Counts",
@@ -23,7 +23,7 @@
                     "mbid": "8538e728-ca0b-4321-b7e5-cff6565dd4c0",
                     "url": "https://www.last.fm/music/Depeche+Mode"
                 },
-                "playcount": "2200000"
+                "playcount": 2200000
             },
             {
                 "name": "Don't You Want Me",
@@ -35,7 +35,7 @@
                     "mbid": "7adaabfb-acfb-47bc-8c7c-59471c2f0db8",
                     "url": "https://www.last.fm/music/The+Human+League"
                 },
-                "playcount": "3100000"
+                "playcount": 3100000
             },
             {
                 "name": "Tainted Love",
@@ -47,7 +47,7 @@
                     "mbid": "7fb50287-029d-47cc-825a-235ca28024b2",
                     "url": "https://www.last.fm/music/Soft+Cell"
                 },
-                "playcount": "890000"
+                "playcount": 890000
             },
             {
                 "name": "Blue Monday",
@@ -59,7 +59,7 @@
                     "mbid": "f1106b17-dcbb-45f6-b938-199ccfab50cc",
                     "url": "https://www.last.fm/music/New+Order"
                 },
-                "playcount": "4500000"
+                "playcount": 4500000
             }
         ],
         "@attr": {
