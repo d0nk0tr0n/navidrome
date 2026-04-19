@@ -804,8 +804,12 @@ func reRankByPopularity(songs []agents.Song, matched model.MediaFiles, weight fl
                 if !ok || matchScore == 0 {
                         matchScore = 1.0 - float64(i)/float64(len(matched))
                 }
-                normListeners := math.Log1p(float64(meta.Scrobbles)) / math.Log1p(float64(maxScrobbles))
-                score := (1-weight)*matchScore + weight*normListeners
+		scrobbles := meta.Scrobbles
+		if scrobbles < conf.Server.SimilarSongsPopularityMinScrobbles {
+    		    scrobbles = 0
+		}
+		normListeners := math.Log1p(float64(scrobbles)) / math.Log1p(float64(maxScrobbles))
+		score := (1-weight)*matchScore + weight*normListeners
                 results = append(results, scored{mf, score})
         }
 
